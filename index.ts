@@ -14,7 +14,7 @@ const client = new discordjs.Client({
 client.on('ready', () =>{
     console.log('The bot is ready');
 
-    const guildId = '';
+    const guildId = ''; // colocar o id da guilda
     const guild = client.guilds.cache.get(guildId);
     let commands;
 
@@ -25,13 +25,36 @@ client.on('ready', () =>{
     }
 
     commands?.create({
-        name: 'd-6',
-        description: 'Rola um dado D6.',
+        name: 'role-um-dado',
+        description: 'Rola um dado de usa preferência.',
+        options: [
+            {
+                name: 'Lados',
+                description: 'Quantidade de lados do seu dado.',
+                required: true,
+                type: discordjs.Constants.ApplicationCommandOptionTypes.NUMBER
+            }
+        ]
     });
 
     commands?.create({
-        name: 'd-6-Twice',
-        description:'Rola dois dados D6.'
+        name: 'role-dois-dados',
+        description:'Rola dois dados de sua preferência.',
+        options: [
+            {
+                name: 'ladosPrimeiroDado',
+                description:'Quantidade de lados do primeiro dado.',
+                required: true,
+                type: discordjs.Constants.ApplicationCommandOptionTypes.NUMBER
+            },
+            {
+                name: 'ladosSegundoDado',
+                description:'Quantidade de lados do segundo dado.',
+                required: true,
+                type: discordjs.Constants.ApplicationCommandOptionTypes.NUMBER
+            }
+            
+        ]
     });
 });
 
@@ -49,8 +72,9 @@ client.on('interactionCreate',async (interactions) => {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    if (commandName === 'd-6'){
-        const result = getRandomInt(1, 6);
+    if (commandName === 'role-um-dado'){
+        const faces = options.getNumber('lado') || 6;
+        const result = getRandomInt(1, faces);
         
         if (result === 1){
             interactions.reply({
@@ -63,9 +87,11 @@ client.on('interactionCreate',async (interactions) => {
         }
     }
 
-    if (commandName === 'd-6-Twice'){
-        const firstDie = getRandomInt(1, 6);
-        const secondDie = getRandomInt(1, 6);
+    if (commandName === 'role-dois-dados'){
+        const maxFirstDie = options.getNumber('ladosPrimeiroDado') || 6;
+        const maxSecondDie = options.getNumber('ladosSegundoDado') || 6;
+        const firstDie = getRandomInt(1, maxFirstDie);
+        const secondDie = getRandomInt(1, maxSecondDie);
         const result = firstDie + secondDie;
 
         interactions.reply({
@@ -81,4 +107,4 @@ client.on('messageCreate', (message) =>{
 });
 
 
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN); // colocar o id do bot
